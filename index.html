@@ -1,0 +1,282 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="uk"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Домашній мінітренажер</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;700&family=Unbounded:wght@600&display=swap">
+<style>
+/* Homework mini-trainer «Число за його дробом» (6 клас). No scoring: unlimited tries, hints, the solution on request.
+   Two tasks are marked «запиши в зошит» (the same for every pupil, so the teacher can check the notebooks).
+   Scheme layout (Ольга): fractions ABOVE the bar, the numbers BELOW, «?» for the sought one, no «1» over the whole.
+   Key (Ольга): «шукаємо частину — множимо, шукаємо ціле — ділимо». Condition and calculation are separated by a colon. */
+:root{--bg:#f3f6fa;--card:#fff;--text:#1d2433;--muted:#5f6b7d;--line:#d5dde7;--main:#0d7d71;--main2:#095c53;
+  --M:#1f6fc0;--Mbg:#e8f1fc;--D:#7a3fd0;--Dbg:#f2ecfd;--red:#c8281e;--redbg:#fde9e6;--ok:#17784a;--okbg:#e5f5ec;--sun:#fff6e0;--sunline:#f4dfb8}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Golos Text",system-ui,sans-serif}
+body{min-height:100vh;padding:14px 14px 40px;font-size:18px;line-height:1.4}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+h1{font-family:Unbounded,sans-serif;font-weight:600;font-size:21px;line-height:1.25;margin:0}
+.eyebrow{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:500}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:12px}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dot{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);background:#fff;display:grid;place-items:center;font:inherit;font-size:15px;font-weight:700;color:var(--muted);cursor:pointer;padding:0;position:relative}
+.dot.cur{border-color:var(--main);color:var(--main);box-shadow:0 0 0 3px rgba(13,125,113,.18)}
+.dot.done{background:var(--main);border-color:var(--main);color:#fff}
+.dot[disabled]{cursor:default;opacity:.55}
+.dot .nb{position:absolute;right:-6px;top:-8px;font-size:13px}
+.story{background:var(--sun);border:1px solid var(--sunline);border-radius:14px;padding:10px 14px;font-size:19px;line-height:1.5}
+.nbnote{display:flex;gap:8px;align-items:center;background:#fff;border:2px dashed #e0a100;border-radius:12px;padding:8px 12px;font-weight:700;font-size:16px}
+.sch{display:block;width:100%;height:auto;max-width:520px;margin:0 auto}
+.q{font-weight:700;font-size:18px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{font:inherit;font-size:17px;font-weight:700;padding:12px 10px;border-radius:14px;border:2px solid var(--line);background:#fff;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;line-height:1.25}
+.opt.M{border-color:#9cc3ec;background:var(--Mbg)}.opt.D{border-color:#c6b2f5;background:var(--Dbg)}
+.opt .sg{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;color:#fff;font-size:22px;flex:none}
+.opt.M .sg{background:var(--M)}.opt.D .sg{background:var(--D)}
+.opt.on{outline:4px solid var(--ok);outline-offset:1px}
+.opt.no{animation:shake .4s}
+.opt[disabled]{cursor:default}
+.opts.locked .opt:not(.on){opacity:.4}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.msg{border-radius:12px;padding:9px 12px;font-size:16.5px;line-height:1.45}
+.msg.ok{background:var(--okbg);color:#0f5c37}
+.msg.hint{background:var(--redbg);color:#8e1d15}
+.msg.tip{background:#eef2f7;color:var(--text)}
+.ansrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:20px}
+.in{font:inherit;font-size:22px;font-weight:700;width:96px;padding:8px 10px;border:2px solid var(--line);border-radius:12px;text-align:center;color:var(--text)}
+.in.sm{width:64px;font-size:20px;padding:4px 6px}
+.in:focus{outline:none;border-color:var(--main)}
+.in.good{border-color:var(--ok);background:var(--okbg)}
+.btn{font:inherit;font-size:17px;font-weight:700;padding:11px 18px;border:0;border-radius:12px;background:var(--main);color:#fff;cursor:pointer;box-shadow:0 3px 0 var(--main2)}
+.btn.ghost{background:#fff;color:var(--main2);border:2px solid var(--main);box-shadow:none}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sol{background:#fafbfd;border:1px solid var(--line);border-radius:12px;padding:8px 12px;font-size:20px;line-height:2.3}
+.sol p{margin:0}
+.key{display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:15px;font-weight:700;text-align:center}
+.key div{border-radius:12px;padding:7px 6px;line-height:1.3}
+.key .M{background:var(--Mbg);color:var(--M);border:2px solid #9cc3ec}.key .D{background:var(--Dbg);color:var(--D);border:2px solid #c6b2f5}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 .12em;line-height:1.05}
+.fr>span{padding:0 .14em;white-space:nowrap}
+.fr>span+span{border-top:.07em solid currentColor;margin-top:.04em;padding-top:.04em}
+.fr.k>span:first-child{padding-top:.45em}.fr.k>span+span{padding-bottom:.45em}
+.cx{position:relative;display:inline-block}.cx s{text-decoration:none;position:relative}
+.cx s::after{content:"";position:absolute;left:-.1em;right:-.1em;top:52%;border-top:.09em solid var(--red);transform:rotate(-28deg)}
+.cx b{position:absolute;left:50%;transform:translateX(-50%);top:-.8em;font-size:.6em;line-height:1;color:var(--red)}
+.fr>span+span .cx b{top:auto;bottom:-.8em}
+.nw{white-space:nowrap}
+.cM{color:var(--M);font-weight:700}.cD{color:var(--D);font-weight:700}
+.end h2{font-family:Unbounded,sans-serif;font-weight:600;font-size:20px;margin:0}
+.nbtask{border:2px dashed #e0a100;border-radius:12px;padding:10px 12px;background:#fffdf6}
+.wi{border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.wi.ok{border-color:#9fd6b6;background:#f6fcf8}
+.wi p{margin:0;font-size:17.5px;line-height:1.5}
+.nav{display:flex;justify-content:space-between;gap:10px}
+.nav .btn{flex:1;max-width:200px}
+.nav .btn[disabled]{opacity:.35;cursor:default}
+.sch .tap{cursor:pointer}
+.foot{font-size:11px;color:#9aa5b4;margin-top:4px}
+/* scheme animation: cells, then braces and labels */
+.sch .a{opacity:0;animation:pop .45s ease forwards}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.sch .a{transform-box:fill-box;transform-origin:center}
+</style></head><body>
+<div class="wrap">
+  <div><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:nowrap"><span class="eyebrow" style="font-size:11px;letter-spacing:.05em;min-width:0">6 клас · домашня робота · без оцінок</span><span style="font-size:12px;color:var(--muted);white-space:nowrap">Учитель: Сидорчук Н.В.</span></div><h1>Число за його дробом: мінітренажер</h1></div>
+  <div class="dots" id="dots"></div>
+  <div class="card" id="task"></div>
+  <div class="nav"><button class="btn ghost" type="button" id="back">← Назад</button><button class="btn ghost" type="button" id="fwd">Вперед →</button></div>
+</div>
+<script>
+// ---------- LOGIC START ----------
+// kind: "part" — the whole is known, find a part (·); "whole" — a part is known, find the whole (:);
+// "rest" — first part g/b, the rest is x, find the whole (1 − g/b, then x : (rest)).
+// nb: write this task into the notebook (scheme + solution + answer).
+const TASKS=[
+  {kind:"part",draw:1,x:32,a:3,b:8,u:"ябл.",U:"яблук",q:"У кошику <b>32 яблука</b>. Червоні — це <FR> усіх яблук. Скільки червоних яблук?",ans:"червоних яблук"},
+  {kind:"whole",x:36,a:4,b:5,u:"пир.",U:"пиріжків",q:"Мама Ярини спекла пиріжки. Коли продали <b>36 пиріжків</b>, виявилось, що це <FR> усіх пиріжків. Скільки пиріжків спекла мама?",ans:"пиріжків спекла мама",nb:1},
+  {kind:"part",draw:1,x:45,a:4,b:9,u:"хв",U:"хв",q:"Дорога до бабусі триває <b>45 хв</b>. <FR> цього часу — у потязі. Скільки хвилин їдемо потягом?",ans:"хвилин потягом"},
+  {kind:"whole",draw:1,x:240,a:2,b:3,u:"грн",U:"грн",q:"На матеріали для саморобок витратили <FR> зібраних грошей, а саме <b>240 грн</b>. Скільки грошей зібрали?",ans:"гривень зібрали"},
+  {kind:"whole",x:18,a:3,b:7,u:"стор.",U:"сторінок",q:"Даринка прочитала <b>18 сторінок</b> — це <FR> оповідання. Скільки сторінок в оповіданні?",ans:"сторінок в оповіданні",nb:1},
+];
+// Ольга 2026-11-12: notebook tasks are NOT solved in the trainer — only listed on the last screen
+const NB=TASKS.filter(t=>t.nb);TASKS.splice(0,TASKS.length,...TASKS.filter(t=>!t.nb));
+// warm-up (the board's sorting set): what do we look for — the part or the whole? (no calculation)
+const WARM=[
+  {q:`У класі 30 учнів, <FR2/5> з них — хлопці. Скільки хлопців?`,k:"part"},
+  {q:`12 хлопців — це <FR2/5> класу. Скільки учнів у класі?`,k:"whole"},
+  {q:`Оля прочитала 90 сторінок — це <FR3/4> книжки. Скільки сторінок у книжці?`,k:"whole"},
+  {q:`У книжці 120 сторінок. Оля прочитала <FR3/4> книжки. Скільки сторінок прочитала?`,k:"part"},
+  {q:`Довжина шляху 9 км. Пройшли <FR2/3> шляху. Скільки кілометрів пройшли?`,k:"part"},
+  {q:`Пройшли 6 км — це <FR2/3> шляху. Яка довжина шляху?`,k:"whole"},
+  {q:`Знайдіть число, <FR5/6> якого дорівнюють 40.`,k:"whole"},
+  {q:`Знайдіть <FR5/6> від 48.`,k:"part"},
+];
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+// the sought number: part → x·a/b, whole → x·b/a (rest: a/b is the rest fraction)
+const answerOf=t=>t.kind==="part"?t.x*t.a/t.b:t.x*t.b/t.a;
+const wrongOf=t=>t.kind==="part"?t.x*t.b/t.a:t.x*t.a/t.b;   // the result of the other operation
+const fr=(n,d,k)=>`<span class="fr${k?" k":""}"><span>${n}</span><span>${d}</span></span>`;
+const cx=(o,n)=>`<span class="cx"><s>${o}</s><b>${n}</b></span>`;
+const nw=s=>`<span class="nw">${s}</span>`;
+// chain with cancelling: x · a/b = (x·a)/(1·b) = r ;  x : a/b = x · b/a = (x·b)/(1·a) = r
+function chain(t){const x=t.x,a=t.a,b=t.b,r=answerOf(t);
+  if(t.kind==="part"){const g=gcd(x,b);const top=g>1?`${cx(x,x/g)} · ${a}`:`${x} · ${a}`,bot=g>1?`1 · ${cx(b,b/g)}`:`1 · ${b}`;
+    return nw(`${x} · ${fr(a,b)}`)+" = "+nw(fr(top,bot,g>1)+` = ${r}`)}
+  const g=gcd(x,a);const top=g>1?`${cx(x,x/g)} · ${b}`:`${x} · ${b}`,bot=g>1?`1 · ${cx(a,a/g)}`:`1 · ${a}`;
+  return nw(`${x} : ${fr(a,b)}`)+" = "+nw(`${x} · ${fr(b,a)}`)+" = "+nw(fr(top,bot,g>1)+` = ${r}`)}
+// the condition before the colon
+const cond=t=>t.kind==="part"?nw(`${fr(t.a,t.b)} від ${t.x}:`):nw(`Число, ${fr(t.a,t.b)} якого — ${t.x}:`);
+// ---------- LOGIC END ----------
+
+// ---------- scheme (SVG): cells, fractions above, numbers below ----------
+const BX=30,BW=540,BY=112,BH=44;
+const brace=(x1,x2,y,dir)=>{const m=(x1+x2)/2,q=Math.min(10,(x2-x1)/4);return`M${x1} ${y} q0 ${dir*q} ${q} ${dir*q} H${m-q} q${q} 0 ${q} ${dir*q} q0 ${-dir*q} ${q} ${-dir*q} H${x2-q} q${q} 0 ${q} ${-dir*q}`};
+const T=(x,y,s,sz,c)=>`<text x="${x}" y="${y}" text-anchor="middle" font-family="Golos Text, sans-serif" font-weight="700" font-size="${sz}" fill="${c||"#1d2433"}">${s}</text>`;
+function svgFr(x,n,d,c,dl){return`<g class="a" style="animation-delay:${dl}s">${T(x,40,n,28,c)}<line x1="${x-16}" x2="${x+16}" y1="50" y2="50" stroke="${c}" stroke-width="3"/>${T(x,78,d,28,c)}</g>`}
+function lab(x,y,s,dl){if(s==="?")return`<g class="a" style="animation-delay:${dl}s"><circle cx="${x}" cy="${y-10}" r="19" fill="#fde9e6" stroke="#c8281e" stroke-width="3"/>${T(x,y,"?",28,"#c8281e")}</g>`;
+  return`<g class="a" style="animation-delay:${dl}s">${T(x,y,s,26)}</g>`}
+function scheme(t,restKnown){const d=t.b,cw=BW/d;let s=`<defs><pattern id="h" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#e8f1fc"/><line x1="0" y1="0" x2="0" y2="10" stroke="#1f6fc0" stroke-width="3"/></pattern>
+  <pattern id="g" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#f1f3f6"/><line x1="0" y1="0" x2="0" y2="10" stroke="#9aa5b4" stroke-width="2"/></pattern></defs>`;
+  const g=t.kind==="rest"?t.g:0,to=t.kind==="rest"?d:t.a;
+  for(let i=0;i<d;i++){const x=BX+i*cw,f=i<g?"url(#g)":i<to?"url(#h)":"#fff";
+    s+=`<rect class="a" style="animation-delay:${(i*.08).toFixed(2)}s" x="${x}" y="${BY}" width="${cw}" height="${BH}" fill="${f}" stroke="#1d2433" stroke-width="3"/>`}
+  const d1=.3+d*.08,Br=(x1,x2,y,dir,dl)=>`<path class="a" style="animation-delay:${dl}s" d="${brace(x1,x2,y,dir)}" fill="none" stroke="#1d2433" stroke-width="3" stroke-linecap="round"/>`;
+  const xg=BX+g*cw,xt=BX+to*cw,mid=(xg+xt)/2,U=t.u?" "+t.u:"";
+  if(g){s+=Br(BX+2,xg-2,BY-5,-1,d1)+svgFr((BX+xg)/2,g,d,"#7b8698",d1+.2)}
+  s+=Br(xg+2,xt-2,BY-5,-1,d1)+(t.kind==="rest"&&!restKnown?lab(mid,74,"?",d1+.2):svgFr(mid,t.a,d,"#1a5fa8",d1+.2));
+  // below: the part's number (inner), then the whole (outer)
+  s+=Br(xg+2,xt-2,BY+BH+5,1,d1+.5)+lab(mid,BY+BH+50,t.kind==="part"?"?":t.x+U,d1+.7);
+  s+=Br(BX,BX+BW,BY+BH+64,1,d1+.9)+lab(BX+BW/2,BY+BH+112,t.kind==="part"?t.x+U:"?",d1+1.1);
+  return`<svg class="sch" viewBox="0 0 600 ${BY+BH+128}" role="img" aria-label="Схема до задачі">${s}</svg>`}
+
+// ---------- state ----------
+// per task: step 0 (rest only: the rest fraction) → 1 what we look for → 2 operation → 3 answer → 4 done
+const S=TASKS.map(t=>({step:t.kind==="rest"?0:1,tries:0,shown:false,ds:0,hat:[]}));
+let cur=-1;
+const W=WARM.map(()=>({ok:false,miss:0}));
+const warmDone=()=>W.every(w=>w.ok);
+const wq=q=>q.replace(/<FR(\d+)\/(\d+)>/g,(m,a,b)=>fr(a,b));
+const $=s=>document.querySelector(s);
+const fracQ=t=>t.q.replace("<FR>",fr(t.kind==="rest"?t.g:t.a,t.b));
+const seek=t=>t.kind==="part"?"part":"whole";
+
+function dots(){$("#dots").innerHTML=`<button class="dot${cur===-1?" cur":""}${warmDone()?" done":""}" type="button" data-i="-1" aria-label="Розминка" style="width:auto;padding:0 10px;border-radius:17px">Розминка</button>`+TASKS.map((t,i)=>{const open=true||S[i].step>(t.kind==="rest"?0:1);
+  return`<button class="dot${i===cur?" cur":""}${S[i].step===4?" done":""}" type="button" data-i="${i}"${open?"":" disabled"} aria-label="Задача ${i+1}">${i+1}${t.nb?'<span class="nb">📒</span>':""}</button>`}).join("")+
+  `<button class="dot${cur===TASKS.length?" cur":""}" type="button" data-i="${TASKS.length}" aria-label="Зошит">📒</button>`;
+  document.querySelectorAll(".dot").forEach(b=>b.onclick=()=>{cur=+b.dataset.i;render(true)})}
+
+function render(anim){dots();$("#back").disabled=cur<=-1;$("#fwd").disabled=cur>=TASKS.length;if(cur===-1)return renderWarm();if(cur===TASKS.length)return renderEnd();
+  const t=TASKS[cur],st=S[cur],k=seek(t);let h="";
+  h+=`<div class="row" style="justify-content:space-between"><b>Задача ${cur+1} з ${TASKS.length}</b></div>`;
+  if(t.nb)h+=`<div class="nbnote">📒 Цю задачу запиши в зошит: схема, розв’язання, відповідь.</div>`;
+  h+=`<div class="story">${fracQ(t)}</div>`;
+  // Ольга 2026-11-12: in one task the pupil builds the scheme
+  if(t.draw&&st.ds<4){h+=builderHtml(t,st);$("#task").innerHTML=h;wireBuilder(t,st);return}
+  h+=`<div id="schWrap">${scheme(t,st.step>0)}</div>`;
+  // step 0: the rest
+  if(t.kind==="rest"){h+=`<p class="q">${t.rq}</p>`;
+    if(st.step===0)h+=`<div class="ansrow">1 − ${fr(t.g,t.b)} = ${fr(`<input class="in sm" id="rn" inputmode="numeric" aria-label="чисельник">`,`<input class="in sm" id="rd" inputmode="numeric" aria-label="знаменник">`)} <button class="btn" type="button" id="rOk">Перевірити</button></div><div id="rMsg"></div>`;
+    else h+=`<div class="sol"><p>${nw(`1 − ${fr(t.g,t.b)} = ${fr(t.b,t.b)} − ${fr(t.g,t.b)} = ${fr(t.a,t.b)}`)} — ${t.rw} продали другого дня</p></div>`}
+  // step 1: what do we look for?
+  if(st.step>=1){h+=`<p class="q">Подивись, де «?». Що шукаємо?</p><div class="opts${st.step>1?" locked":""}" id="o1">
+      <button class="opt M${st.step>1&&k==="part"?" on":""}" type="button" data-v="part"${st.step>1?" disabled":""}>Шукаємо частину</button>
+      <button class="opt D${st.step>1&&k==="whole"?" on":""}" type="button" data-v="whole"${st.step>1?" disabled":""}>Шукаємо ціле</button></div><div id="m1"></div>`}
+  // step 2: the operation
+  if(st.step>=2){h+=`<p class="q">Яку дію виконуємо?</p><div class="opts${st.step>2?" locked":""}" id="o2">
+      <button class="opt M${st.step>2&&k==="part"?" on":""}" type="button" data-v="part"${st.step>2?" disabled":""}><span class="sg">·</span>Множимо на дріб</button>
+      <button class="opt D${st.step>2&&k==="whole"?" on":""}" type="button" data-v="whole"${st.step>2?" disabled":""}><span class="sg">:</span>Ділимо на дріб</button></div><div id="m2"></div>`}
+  // step 3: the answer
+  if(st.step>=3){const done=st.step===4;
+    h+=`<p class="q">Обчисли.</p><div class="ansrow"><span>${cond(t)}</span> ${t.kind==="part"?nw(`${t.x} · ${fr(t.a,t.b)}`):nw(`${t.x} : ${fr(t.a,t.b)}`)} = <input class="in${done?" good":""}" id="ans" inputmode="numeric" autocomplete="off" aria-label="відповідь"${done?` value="${answerOf(t)}" disabled`:""}> ${t.u&&t.kind!=="part"?"":""}${done?"":`<button class="btn" type="button" id="aOk">Перевірити</button>`}</div><div id="m3"></div>`;
+    if(done){h+=`<div class="msg ok"><b>Правильно!</b> ${t.U?`${answerOf(t)} — ${t.ans}.`:""}</div>`;
+      h+=`<div class="sol"><p>${t.kind==="rest"?"2) ":""}${cond(t)}</p><p>${chain(t)}</p>${t.kind!=="part"?`<p style="font-size:16px;line-height:2;color:var(--muted)">Перевірка: ${nw(`${answerOf(t)} · ${fr(t.a,t.b)} = ${t.x}`)} ✓</p>`:""}</div>`;
+      h+=`<div class="row">${cur<TASKS.length-1?`<button class="btn" type="button" id="next">Наступна задача →</button>`:`<button class="btn" type="button" id="next">Що записати в зошит →</button>`}</div>`}
+    else if(st.tries>=2&&!st.shown)h+=`<div class="row"><button class="btn ghost" type="button" id="showSol">Показати розв’язання</button></div>`}
+  $("#task").innerHTML=h;
+  if(!anim)document.querySelectorAll("#schWrap .a").forEach(e=>e.style.animation="none"),document.querySelectorAll("#schWrap .a").forEach(e=>e.style.opacity=1);
+  wire(t,st,k)}
+
+function say(id,cls,html){const m=$("#"+id);if(m)m.innerHTML=`<div class="msg ${cls}">${html}</div>`}
+const KEY=`<div class="key" style="margin-top:6px"><div class="M">Шукаємо частину — множимо ·</div><div class="D">Шукаємо ціле — ділимо :</div></div>`;
+
+function wire(t,st,k){
+  const rOk=$("#rOk");if(rOk){const go=()=>{const n=+$("#rn").value,d=+$("#rd").value;
+      if(n*t.b===t.a*d&&n>0){st.step=1;render(false);say("m1","ok",`Так! Решта — це ${fr(t.a,t.b)} ${t.rw}, і це <b>${t.x} ${t.U}</b>. Тепер схема повна.`);document.querySelectorAll("#schWrap .a").forEach(e=>{e.style.animation="";})}
+      else say("rMsg","hint",`Усі горнята — це ${fr(t.b,t.b)}. Відніми прочитане першого дня: ${fr(t.b,t.b)} − ${fr(t.g,t.b)}.`)};
+    rOk.onclick=go;$("#rd").onkeydown=e=>{if(e.key==="Enter")go()};$("#rn").onkeydown=e=>{if(e.key==="Enter")$("#rd").focus()}}
+  const o1=$("#o1");if(o1&&st.step===1)o1.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    if(b.dataset.v===k){st.step=2;render(false);say("m1","ok",k==="part"?"Так! Ціле відоме, «?» стоїть під <b>частиною</b>.":"Так! Відома частина, «?» стоїть під <b>цілим</b>.")}
+    else{b.classList.remove("no");void b.offsetWidth;b.classList.add("no");
+      say("m1","hint",k==="part"?`Подивись на схему: число ${t.x} стоїть під <b>цілим</b> відрізком, а «?» — під заштрихованою частиною.`:`Подивись на схему: число ${t.x} стоїть під <b>заштрихованою частиною</b>, а «?» — під усім відрізком.`)}});
+  const o2=$("#o2");if(o2&&st.step===2)o2.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    if(b.dataset.v===k){st.step=3;render(false);say("m2","ok",k==="part"?"Так! Шукаємо частину — <b>множимо</b> на дріб.":"Так! Шукаємо ціле — <b>ділимо</b> на дріб.");setTimeout(()=>{const a=$("#ans");if(a)a.focus({preventScroll:true})},50)}
+    else{b.classList.remove("no");void b.offsetWidth;b.classList.add("no");say("m2","hint","Згадай правило:"+KEY)}});
+  const aOk=$("#aOk");if(aOk){const go=()=>{const v=$("#ans").value.trim().replace(",",".");if(v==="")return;const n=+v;
+      if(n===answerOf(t)){st.step=4;render(false)}
+      else{st.tries++;
+        let hint=n===wrongOf(t)?(k==="part"?"Схоже, ти поділив(-ла), а шукаємо частину — треба <b>множити</b>.":"Схоже, ти помножив(-ла), а шукаємо ціле — треба <b>ділити</b>."):
+          (t.kind==="part"?`Помнож: ${nw(`${t.x} · ${fr(t.a,t.b)} = ${fr(`${t.x} · ${t.a}`,`1 · ${t.b}`)}`)}. Спершу скороти ${t.x} і ${t.b}.`
+            :`Ділення на дріб заміни множенням на обернений дріб: ${nw(`${t.x} : ${fr(t.a,t.b)} = ${t.x} · ${fr(t.b,t.a)}`)}.`);
+        if(st.tries>=2&&!st.shown&&!$("#showSol")){$("#m3").insertAdjacentHTML("afterend",`<div class="row"><button class="btn ghost" type="button" id="showSol">Показати розв’язання</button></div>`);wireShow(t,st)}
+        say("m3","hint","Ще раз. "+hint);$("#ans").select()}};
+    aOk.onclick=go;$("#ans").onkeydown=e=>{if(e.key==="Enter")go()}}
+  wireShow(t,st);
+  const nx=$("#next");if(nx)nx.onclick=()=>{cur++;render(true);window.scrollTo({top:0,behavior:"smooth"})}}
+function wireShow(t,st){const b=$("#showSol");if(b)b.onclick=()=>{st.shown=true;st.step=4;render(false)}}
+
+function renderEnd(){const nb=NB.map((t,i)=>[t,i]);
+  $("#task").innerHTML=`<div class="end" style="display:flex;flex-direction:column;gap:12px"><h2>Запиши в зошит 📒</h2>
+    <p style="margin:0">Запиши в зошит <b>дві задачі</b>. Для кожної: <b>схема</b> (зверху дріб, знизу числа, шукане «?»), <b>розв’язання</b> і <b>відповідь</b>.</p>
+    ${nb.map(([t,i])=>`<div class="nbtask"><b>Задача ${i+1}.</b> ${fracQ(t)}</div>`).join("")}
+    ${KEY}
+    <div class="row"><button class="btn ghost" type="button" id="again">Пройти ще раз</button></div></div>`;
+  $("#again").onclick=()=>{S.forEach((s,i)=>{s.step=TASKS[i].kind==="rest"?0:1;s.tries=0;s.shown=false;s.ds=0;s.hat=[]});W.forEach(w=>{w.ok=false;w.miss=0});cur=-1;render(true)}}
+
+// ---------- the pupil builds the scheme: parts → hatching → fraction above → the number below ----------
+function builderSvg(t,st){const d=st.ds>=1?t.b:0;let s=`<defs><pattern id="hb" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="10" height="10" fill="#e8f1fc"/><line x1="0" y1="0" x2="0" y2="10" stroke="#1f6fc0" stroke-width="3"/></pattern></defs>`;
+  if(!d)s+=`<rect x="${BX}" y="${BY}" width="${BW}" height="${BH}" fill="#fff" stroke="#1d2433" stroke-width="3"/>`;
+  const cw=d?BW/d:BW;
+  for(let i=0;i<d;i++){const on=st.hat.includes(i);s+=`<rect class="cell${st.ds===1?" tap":""}" data-c="${i}" x="${BX+i*cw}" y="${BY}" width="${cw}" height="${BH}" fill="${on?"url(#hb)":"#fff"}" stroke="#1d2433" stroke-width="3"/>`}
+  if(st.ds>=3){const xt=BX+t.a*cw,m=(BX+xt)/2;s+=`<path d="${brace(BX+2,xt-2,BY-5,-1)}" fill="none" stroke="#1d2433" stroke-width="3" stroke-linecap="round"/>`+svgFr(m,t.a,t.b,"#1a5fa8",0)}
+  return`<svg class="sch" viewBox="0 0 600 ${BY+BH+128}" role="img" aria-label="Схема, яку будуєш">${s}</svg>`}
+function builderHtml(t,st){let h=`<div class="msg tip"><b>Побудуй схему сам(а)!</b> Крок ${st.ds+1} з 4.</div><div id="schWrap">${builderSvg(t,st)}</div>`;
+  if(st.ds===0)h+=`<p class="q">На скільки рівних частин поділимо відрізок? (Подивись на знаменник.)</p><div class="ansrow"><input class="in" id="bIn" inputmode="numeric" aria-label="кількість частин"><button class="btn" type="button" id="bOk">Поділити</button></div>`;
+  if(st.ds===1)h+=`<p class="q">Торкнись частин, які треба заштрихувати. (Скільки показує чисельник?)</p><div class="row"><button class="btn" type="button" id="bOk">Готово</button></div>`;
+  if(st.ds===2)h+=`<p class="q">Що пишемо зверху над заштрихованою частиною?</p><div class="ansrow">${fr(`<input class="in sm" id="bN" inputmode="numeric" aria-label="чисельник">`,`<input class="in sm" id="bD" inputmode="numeric" aria-label="знаменник">`)}<button class="btn" type="button" id="bOk">Записати</button></div>`;
+  if(st.ds===3)h+=`<p class="q">Де пишемо <b>${t.x} ${t.u}</b>?</p><div class="opts"><button class="opt M" type="button" data-v="part">Під заштрихованою частиною</button><button class="opt D" type="button" data-v="whole">Під усім відрізком</button></div>`;
+  return h+`<div id="bMsg"></div>`}
+const pl=n=>n%10>=2&&n%10<=4&&(n%100<12||n%100>14)?"рівні частини":n%10===1&&n%100!==11?"рівну частину":"рівних частин";
+function wireBuilder(t,st){const ok=$("#bOk"),next=()=>{st.ds++;render(false)};
+  const no=html=>{$("#bMsg").innerHTML=`<div class="msg hint">${html}</div>`};
+  if(st.ds===0){const go=()=>{+$("#bIn").value===t.b?next():no(`Знаменник дробу ${fr(t.a,t.b)} — це ${t.b}. Ділимо відрізок на ${t.b} ${pl(t.b)}.`)};ok.onclick=go;$("#bIn").onkeydown=e=>{if(e.key==="Enter")go()}}
+  if(st.ds===1){document.querySelectorAll("#schWrap .cell").forEach(c=>c.onclick=()=>{const i=+c.dataset.c,k=st.hat.indexOf(i);if(k<0)st.hat.push(i);else st.hat.splice(k,1);$("#schWrap").innerHTML=builderSvg(t,st);wireBuilder(t,st)});
+    ok.onclick=()=>{if(st.hat.length===t.a){st.hat=[...Array(t.a).keys()];next()}else no(`Чисельник дробу ${fr(t.a,t.b)} — ${t.a}. Заштрихуй ${t.a} ${pl(t.a).replace("рівні ","").replace("рівних ","")} (зараз ${st.hat.length}).`)}}
+  if(st.ds===2){const go=()=>{+$("#bN").value===t.a&&+$("#bD").value===t.b?next():no(`Зверху пишемо дріб — ту частину, яку заштрихували: ${t.a} з ${t.b} частин.`)};ok.onclick=go;$("#bD").onkeydown=e=>{if(e.key==="Enter")go()}}
+  if(st.ds===3)document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const need=t.kind==="part"?"whole":"part";
+    if(b.dataset.v===need){st.ds=4;render(true);const m=document.createElement("div");m.className="msg ok";m.innerHTML=`Схему побудовано! ${t.x} ${t.u} — під ${need==="part"?"частиною":"цілим"}, а «?» — під ${need==="part"?"цілим":"частиною"}.`;$("#schWrap").after(m)}
+    else{b.classList.remove("no");void b.offsetWidth;b.classList.add("no");no(t.kind==="part"?`${t.x} ${t.u} — це все (ціле), тому пишемо під усім відрізком.`:`${t.x} ${t.u} — це лише ${fr(t.a,t.b)} від усього, тобто частина. Пишемо під заштрихованою частиною.`)}})}
+
+// ---------- warm-up: the part or the whole? ----------
+function renderWarm(){let h=`<b>Розминка: що шукаємо — частину чи ціле?</b><p style="margin:0;color:var(--muted);font-size:16px">Обчислювати не треба. Прочитай задачу й обери, що в ній шукають.</p>`;
+  h+=WARM.map((w,i)=>{const s=W[i];return`<div class="wi${s.ok?" ok":""}" data-i="${i}"><p>${i+1}) ${wq(w.q)}</p><div class="opts${s.ok?" locked":""}">
+    <button class="opt M${s.ok&&w.k==="part"?" on":""}" type="button" data-v="part"${s.ok?" disabled":""}>Шукаємо частину</button>
+    <button class="opt D${s.ok&&w.k==="whole"?" on":""}" type="button" data-v="whole"${s.ok?" disabled":""}>Шукаємо ціле</button></div><div class="wm"></div></div>`}).join("");
+  h+=`<div id="wEnd"></div>`;
+  $("#task").innerHTML=h;
+  document.querySelectorAll(".wi").forEach(el=>{const i=+el.dataset.i,w=WARM[i];el.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    if(b.dataset.v===w.k){W[i].ok=true;el.classList.add("ok");el.querySelector(".opts").classList.add("locked");b.classList.add("on");el.querySelectorAll(".opt").forEach(x=>x.disabled=true);
+      el.querySelector(".wm").innerHTML=`<div class="msg ok">${w.k==="part"?"Так! Відоме все (ціле), а питають про частину.":"Так! Відома частина, а питають про все (ціле)."}</div>`;dots();warmEnd()}
+    else{W[i].miss++;b.classList.remove("no");void b.offsetWidth;b.classList.add("no");
+      el.querySelector(".wm").innerHTML=`<div class="msg hint">Подивись, про що питають: про <b>все</b> (усіх учнів, усю книжку, увесь шлях, усе число) — це ціле; про <b>кусочок</b> від відомого — це частина.</div>`}})});
+  warmEnd()}
+function warmEnd(){const e=$("#wEnd");if(!e)return;if(!warmDone()){e.innerHTML="";return}
+  e.innerHTML=`<div class="msg ok"><b>Розминку виконано!</b> А тепер правило, яке знадобиться в задачах:</div>${KEY}<div class="row"><button class="btn" type="button" id="toTasks">До задач →</button></div>`;
+  $("#toTasks").onclick=()=>{cur=0;render(true);window.scrollTo({top:0,behavior:"smooth"})}}
+
+$("#back").onclick=()=>{if(cur>-1){cur--;render(true);window.scrollTo({top:0,behavior:"smooth"})}};
+$("#fwd").onclick=()=>{if(cur<TASKS.length){cur++;render(true);window.scrollTo({top:0,behavior:"smooth"})}};
+render(true);
+</script></body></html>
+
+</body></html>
